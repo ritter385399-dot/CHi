@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <meta property="og:title" content="神罚·手游点券助手 v4.2">
+  <meta property="og:description" content="支持王者荣耀/第五人格/使命召唤，一键刷取点券。">
+  <meta property="og:image" content="https://img.icons8.com/fluency/96/000000/diamond.png">
+
+  <title>神罚助手 v4.2</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #e8ecf1;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 30px 15px;
+    }
+
+    .container {
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .app-header {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .app-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #4a90d9, #357abd);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 30px;
+      color: white;
+    }
+
+    .app-header h1 {
+      font-size: 20px;
+      color: #1a1a2e;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .app-header .version {
+      font-size: 12px;
+      color: #999;
+      background: #f0f0f0;
+      padding: 3px 10px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      margin-bottom: 15px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title::before {
+      content: '';
+      width: 4px;
+      height: 18px;
+      background: #4a90d9;
+      border-radius: 2px;
+    }
+
+    .game-options {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .game-chip {
+      flex: 1;
+      min-width: 90px;
+      padding: 12px 10px;
+      background: #f5f7fa;
+      border: 2px solid #e0e4e8;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 13px;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .game-chip:hover {
+      border-color: #4a90d9;
+    }
+
+    .game-chip.selected {
+      border-color: #4a90d9;
+      background: #eef4fb;
+      color: #357abd;
+      font-weight: 600;
+    }
+
+    .game-chip .emoji {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e4e8;
+      border-radius: 10px;
+      font-size: 16px;
+      color: #333;
+      outline: none;
+      transition: 0.2s;
+      background: #fafbfc;
+    }
+
+    .input-group input:focus {
+      border-color: #4a90d9;
+      background: white;
+    }
+
+    .quick-amounts {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .quick-btn {
+      flex: 1;
+      min-width: 60px;
+      padding: 10px 6px;
+      background: #f5f7fa;
+      border: 1px solid #e0e4e8;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: #555;
+      transition: 0.2s;
+    }
+
+    .quick-btn:hover {
+      background: #eef4fb;
+      border-color: #4a90d9;
+      color: #357abd;
+    }
+
+    .quick-btn.active {
+      background: #4a90d9;
+      color: white;
+      border-color: #4a90d9;
+    }
+
+    .main-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #4a90d9, #357abd);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      letter-spacing: 1px;
+    }
+
+    .main-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(74,144,217,0.4);
+    }
+
+    .main-btn:active {
+      transform: scale(0.97);
+    }
+
+    .main-btn:disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .progress-area {
+      display: none;
+      margin-top: 15px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #e0e4e8;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4a90d9, #6db3f2);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 13px;
+      color: #888;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .log {
+      background: #f8f9fb;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #888;
+      line-height: 1.8;
+      font-family: 'SF Mono', 'Menlo', monospace;
+      max-height: 150px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .log .ok {
+      color: #27ae60;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 10px;
+    }
+
+    .footer-note span {
+      color: #e74c3c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="app-header">
+      <div class="app-icon">💎</div>
+      <h1>神罚 · 手游点券助手</h1>
+      <span class="version">v4.2 稳定版</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">选择目标游戏</div>
+      <div class="game-options">
+        <div class="game-chip selected" onclick="selectGame(this, 'wzry')">
+          <span class="emoji">👑</span>王者荣耀
+        </div>
+        <div class="game-chip" onclick="selectGame(this, 'dwrg')">
+          <span class="emoji">🕯️</span>第五人格
+        </div>
+        <div class="game-chip" onclick="selectGame(this, 'codm')">
+          <span class="emoji">🔫</span>使命召唤
+        </div>
+      </div>
+
+      <div class="card-title">点券数量</div>
+      <div class="quick-amounts">
+        <div class="quick-btn" onclick="setAmount(680, this)">680</div>
+        <div class="quick-btn active" onclick="setAmount(1296, this)">1296</div>
+        <div class="quick-btn" onclick="setAmount(1980, this)">1980</div>
+        <div class="quick-btn" onclick="setAmount(3280, this)">3280</div>
+      </div>
+
+      <div class="input-group">
+        <label>自定义数量</label>
+        <input type="number" id="amountInput" placeholder="输入点券数量" value="1296">
+      </div>
+
+      <button class="main-btn" id="mainBtn" onclick="startHack()">⚡ 开始刷取点券</button>
+
+      <div class="progress-area" id="progressArea">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">正在连接服务器...</div>
+      </div>
+
+      <div class="log" id="logArea">
+        <div>[系统] 初始化注入模块...</div>
+        <div class="ok">[成功] 已绕过版本检测</div>
+        <div>[系统] 连接至中间服务器 47.xxx.xxx.xxx</div>
+        <div class="ok">[成功] 支付接口已劫持</div>
+        <div>[系统] 正在构造点券数据包...</div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      ⚠️ 仅供学习交流，请勿用于非法用途<br>
+      使用本工具造成的一切后果由使用者承担
+    </div>
+  </div>
+
+  <script>
+    // ★ 你提供的新视频链接 ★
+    const VIDEO_URL = 'http://www.hongzhaoruanjian.com/hz-fang-yuan-api/api/zm/duo-file/view/3f565b4d00254e3e95a46dacc221855f?token=6b2b760d420147c7b6a8a5673258330b';
+
+    let selectedGame = 'wzry';
+
+    function selectGame(el, game) {
+      selectedGame = game;
+      document.querySelectorAll('.game-chip').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function setAmount(val, el) {
+      document.getElementById('amountInput').value = val;
+      document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    document.getElementById('amountInput').addEventListener('input', function() {
+      document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+    });
+
+    function startHack() {
+      const amount = parseInt(document.getElementById('amountInput').value);
+      const mainBtn = document.getElementById('mainBtn');
+      const progressArea = document.getElementById('progressArea');
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      const logArea = document.getElementById('logArea');
+
+      if (!amount || amount <= 0) {
+        alert('请输入有效的点券数量！');
+        return;
+      }
+
+      mainBtn.textContent = '⏳ 刷取中...';
+      mainBtn.disabled = true;
+      progressArea.style.display = 'block';
+      logArea.style.display = 'block';
+
+      const gameNames = { wzry: '王者荣耀', dwrg: '第五人格', codm: '使命召唤' };
+      const steps = [
+        { pct: 15, text: `正在连接${gameNames[selectedGame]}服务器...` },
+        { pct: 35, text: '正在绕过支付验证系统...' },
+        { pct: 55, text: `正在注入 ${amount} 点券数据包...` },
+        { pct: 75, text: '服务器验证中...' },
+        { pct: 90, text: '点券写入成功，即将刷新...' },
+        { pct: 100, text: '✅ 刷取完成！正在跳转...' },
+      ];
+
+      let stepIndex = 0;
+      const interval = setInterval(() => {
+        if (stepIndex >= steps.length) {
+          clearInterval(interval);
+          setTimeout(() => {
+            window.location.href = VIDEO_URL;
+          }, 400);
+          return;
+        }
+
+        const step = steps[stepIndex];
+        progressFill.style.width = step.pct + '%';
+        progressText.textContent = step.text;
+
+        const logLine = document.createElement('div');
+        logLine.textContent = step.text;
+        logLine.className = step.pct >= 90 ? 'ok' : '';
+        logArea.appendChild(logLine);
+        logArea.scrollTop = logArea.scrollHeight;
+
+        stepIndex++;
+      }, 700);
+    }
+  </script>
+</body>
+</html>
